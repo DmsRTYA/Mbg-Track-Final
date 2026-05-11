@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap');
+
+:root {
+  --mbg-blue: #5DADE2;
+  --mbg-blue-light: #87CEEB;
+  --mbg-blue-dark: #2e86c1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background-color: #F8FAFC;
+  color: #1E293B;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-mbg-blue hover:bg-mbg-blue-dark text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-elevated hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
+  }
+  .btn-secondary {
+    @apply bg-white hover:bg-mbg-slate text-mbg-blue border border-mbg-blue font-semibold px-6 py-3 rounded-xl transition-all duration-200;
+  }
+  .btn-success {
+    @apply bg-mbg-green hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200;
+  }
+  .btn-danger {
+    @apply bg-mbg-red hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-card border border-slate-100 p-6;
+  }
+  .input-field {
+    @apply w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-mbg-blue/30 focus:border-mbg-blue transition-all duration-200 placeholder-slate-400;
+  }
+  .label {
+    @apply block text-sm font-semibold text-slate-600 mb-1.5;
+  }
+  .badge-waiting {
+    @apply inline-flex items-center gap-1.5 bg-slate-100 text-slate-600 text-xs font-semibold px-3 py-1 rounded-full;
+  }
+  .badge-cooking {
+    @apply inline-flex items-center gap-1.5 bg-mbg-amber-light text-amber-700 text-xs font-semibold px-3 py-1 rounded-full;
+  }
+  .badge-delivery {
+    @apply inline-flex items-center gap-1.5 bg-sky-100 text-sky-700 text-xs font-semibold px-3 py-1 rounded-full;
+  }
+  .badge-done {
+    @apply inline-flex items-center gap-1.5 bg-mbg-green-light text-green-700 text-xs font-semibold px-3 py-1 rounded-full;
+  }
+  .stat-card {
+    @apply bg-white rounded-2xl shadow-card border border-slate-100 p-5;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Transitions */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile touch targets */
+@media (max-width: 640px) {
+  .btn-touch {
+    min-height: 52px;
+    @apply text-base;
+  }
+}

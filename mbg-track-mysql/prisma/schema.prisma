@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ── USER ──────────────────────────────────────────────────────────────────────
+model User {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(255)
+  email     String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  role      UserRole
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school        School?
+  courier       Courier?
+  pushSubs      PushSubscription[]
+  notifications Notification[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+enum UserRole {
+  admin
+  school
+  courier
+}
+
+// ── SCHOOL ────────────────────────────────────────────────────────────────────
+model School {
+  id            String   @id @default(cuid())
+  name          String   @db.VarChar(255)
+  address       String   @db.Text
+  principalName String   @db.VarChar(255)
+  totalStudents Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders Order[]
+
+  @@index([userId])
+  @@map("schools")
+}
+
+// ── COURIER ───────────────────────────────────────────────────────────────────
+model Courier {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(255)
+  phone     String   @db.VarChar(20)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String  @unique
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders Order[]
+
+  @@index([userId])
+  @@map("couriers")
+}
+
+// ── ORDER ─────────────────────────────────────────────────────────────────────
+model Order {
+  id        String      @id @default(cuid())
+  date      String      @db.VarChar(10)
+  portions  Int
+  status    OrderStatus @default(pending)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id])
+  courierId String?
+  courier   Courier? @relation(fields: [courierId], references: [id])
+
+  deliveryProof DeliveryProof?
+
+  @@unique([schoolId, date])
+  @@index([date])
+  @@index([schoolId])
+  @@index([courierId])
+  @@index([status])
+  @@map("orders")
+}
+
+enum OrderStatus {
+  pending
+  cooking
+  on_delivery
+  delivered
+}
+
+// ── DELIVERY PROOF ────────────────────────────────────────────────────────────
+model DeliveryProof {
+  id          String   @id @default(cuid())
+  photoUrl    String   @db.VarChar(500)   // path relatif file foto
+  latitude    Float?   @db.Float
+  longitude   Float?   @db.Float
+  address     String?  @db.VarChar(500)
+  note        String?  @db.VarChar(500)
+  submittedAt DateTime @default(now())
+
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("delivery_proofs")
+}
+
+// ── INVENTORY ─────────────────────────────────────────────────────────────────
+model InventoryItem {
+  id        String   @id @default(cuid())
+  name      String   @unique @db.VarChar(255)
+  unit      String   @db.VarChar(50)
+  quantity  Float    @default(0) @db.Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  logs InventoryLog[]
+
+  @@index([name])
+  @@map("inventory_items")
+}
+
+model InventoryLog {
+  id        String        @id @default(cuid())
+  quantity  Float         @db.Float
+  type      LogType
+  note      String?       @db.VarChar(500)
+  createdAt DateTime      @default(now())
+
+  itemId String
+  item   InventoryItem @relation(fields: [itemId], references: [id])
+
+  @@index([itemId])
+  @@index([createdAt])
+  @@map("inventory_logs")
+}
+
+enum LogType {
+  in
+  out
+}
+
+// ── PUSH SUBSCRIPTION (Web Push) ─────────────────────────────────────────────
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @db.Text
+  p256dh    String   @db.VarChar(500)
+  auth      String   @db.VarChar(255)
+  userAgent String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
+// ── NOTIFICATION ──────────────────────────────────────────────────────────────
+model Notification {
+  id        String           @id @default(cuid())
+  title     String           @db.VarChar(255)
+  body      String           @db.VarChar(500)
+  type      NotificationType
+  data      String?          @db.Text  // JSON payload
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  order_submitted
+  order_cooking
+  order_on_delivery
+  order_delivered
+  delivery_proof
+  stock_low
+}

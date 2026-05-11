@@ -1,0 +1,22 @@
+{
+  "name": "MBG-Track",
+  "short_name": "MBG-Track",
+  "description": "Sistem Informasi Manajemen Rantai Pasokan Dapur Umum - Program Makan Bergizi Gratis",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/logo-bgn.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo-bgn.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    }
+  ]
+}
